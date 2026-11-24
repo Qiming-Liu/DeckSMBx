@@ -25,6 +25,7 @@ class Plugin:
         self.hash_path = os.path.join(
             decky.DECKY_PLUGIN_SETTINGS_DIR, "nt_hash")
         self._installing = False
+        self._migrate_from_decksmb()
         try:
             self.settings = self._load_setting()
         except Exception as e:
@@ -241,6 +242,34 @@ class Plugin:
             await self._remove_dnssd_service()
         return {"success": True}
 
+    # ssh
+
+    async def _find_ssh_unit(self) -> Optional[str]:
+        for unit in ("sshd.service", "ssh.service"):
+            rc, out, _ = await self._run(f"systemctl list-unit-files --no-legend {unit}", log=False)
+            if rc == 0 and out:
+                return unit
+        return None
+
+    async def get_ssh_status(self) -> dict:
+        unit = await self._find_ssh_unit()
+        if not unit:
+            return {"available": False, "active": False, "ip": ""}
+        _, state, _ = await self._run(f"systemctl is-active {unit}", log=False)
+        _, ip, _ = await self._run("ip route get 1 | awk '{print $7; exit}'")
+        return {"available": True, "active": state == "active", "ip": ip}
+
+    async def toggle_ssh(self, enable: bool) -> dict:
+        unit = await self._find_ssh_unit()
+        if not unit:
+            return {"success": False, "error": "SSH service not found"}
+        # enable/disable too, so the choice survives a reboot
+        action = "enable" if enable else "disable"
+        rc, _, stderr = await self._run(f"systemctl {action} --now {unit}")
+        if rc != 0:
+            return {"success": False, "error": stderr or "systemctl failed"}
+        return {"success": True}
+
     async def list_dirs(self, path: str) -> dict:
         try:
             folder_list = []
@@ -388,7 +417,7 @@ class Plugin:
                 "cat /etc/os-release",
                 "uname -r",
                 "smbd -V",
-                "systemctl status smb wsdd systemd-resolved firewalld --no-pager",
+                "systemctl status smb wsdd sshd systemd-resolved firewalld --no-pager",
                 "cat /etc/samba/smb.conf",
                 "testparm -s",
                 "pdbedit -L",
@@ -506,6 +535,27 @@ class Plugin:
     def _remove_file(self, path: str):
         if os.path.exists(path):
             os.remove(path)
+
+    def _migrate_from_decksmb(self):
+        """First start after replacing the original DeckSMB: take over its shares and password backup."""
+        old_dir = os.path.join(os.path.dirname(decky.DECKY_PLUGIN_SETTINGS_DIR), "DeckSMB")
+        if os.path.exists(self.settings_path) or os.path.realpath(old_dir) == os.path.realpath(decky.DECKY_PLUGIN_SETTINGS_DIR):
+            return
+        try:
+            os.makedirs(decky.DECKY_PLUGIN_SETTINGS_DIR, exist_ok=True)
+            for name in ("settings.json", "nt_hash"):
+                src = os.path.join(old_dir, name)
+                if os.path.exists(src):
+                    with open(src, "rb") as f:
+                        data = f.read()
+                    dst = os.path.join(decky.DECKY_PLUGIN_SETTINGS_DIR, name)
+                    with open(dst, "wb") as f:
+                        f.write(data)
+                    if name == "nt_hash":
+                        os.chmod(dst, 0o600)
+                    decky.logger.info(f"migrated {name} from DeckSMB")
+        except Exception as e:
+            decky.logger.error(f"Migration from DeckSMB failed: {e}")
 
     def _default_settings(self) -> dict:
         return {"shares": [

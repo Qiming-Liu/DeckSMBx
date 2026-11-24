@@ -1,57 +1,89 @@
 {
   "install": {
-    "title": "安装 Samba",
-    "status": "状态",
-    "notInstalled": "Samba 尚未安装",
-    "installing": "安装中...",
+    "notInstalled": "Samba 未安装",
+    "why": "装好后别的电脑就能看到这台 Deck",
     "installButton": "安装 Samba",
-    "error": "错误",
     "installFailed": "安装失败",
-    "note": "注意：由于 SteamOS 采用不可变文件系统，系统更新后会移除 Samba。每次系统更新后需要重新安装。您的共享文件夹和密码将会保留。"
+    "note": "SteamOS 更新会删掉 Samba，更新后需要重装。共享和密码会保留。",
+    "steps": {
+      "readonly": "关闭只读文件系统",
+      "pacman": "配置 pacman",
+      "package": "安装 samba 包",
+      "config": "写入配置",
+      "password": "设置默认密码",
+      "firewall": "配置防火墙",
+      "discovery": "开启网络发现",
+      "services": "启动服务"
+    }
   },
   "modal": {
-    "ok": "确定",
     "cancel": "取消"
   },
   "folderBrowser": {
-    "title": "选择文件夹",
+    "title": "添加文件夹",
     "loading": "加载中...",
     "noSubfolders": "没有子文件夹",
-    "shareThisFolder": "共享此文件夹",
-    "shareAlreadyExists": "共享已存在"
+    "shareThisFolder": "共享这个文件夹",
+    "shareAlreadyExists": "这个文件夹已经共享了",
+    "willShareAs": "会以 \"{{name}}\" 的名字共享",
+    "home": "主目录",
+    "removable": "SD 卡和 U 盘"
   },
   "shares": {
-    "title": "共享文件夹",
-    "noShares": "未配置共享",
-    "remove": "移除 \"{{name}}\""
+    "title": "共享的文件夹",
+    "noShares": "还没有共享文件夹",
+    "more": "更多",
+    "pause": "暂停共享",
+    "resume": "恢复共享",
+    "remove": "移除",
+    "removed": "已移除 \"{{name}}\"",
+    "undo": "撤销"
   },
   "server": {
-    "title": "Samba 服务器",
+    "title": "文件共享",
     "loading": "加载中...",
-    "pleaseWait": "请稍候",
-    "smbService": "SMB 服务",
-    "stopping": "停止中...",
-    "starting": "启动中...",
-    "running": "运行中",
-    "stopped": "已停止",
-    "username": "用户名",
+    "sharing": "正在共享",
+    "notSharing": "共享已停止",
+    "stopping": "正在停止...",
+    "starting": "正在启动...",
+    "summary": "用户名 deck · {{count}} 个文件夹",
+    "toggleFailed": "无法切换共享",
     "addFolders": "添加文件夹",
-    "changePassword": "更改密码",
-    "changePasswordTitle": "更改 SMB 密码",
-    "newPassword": "新密码",
     "passwordEmpty": "密码不能为空",
     "passwordFailed": "密码设置失败",
     "uninstallSamba": "卸载 Samba"
   },
+  "settings": {
+    "title": "设置",
+    "password": "Samba 密码",
+    "passwordTitle": "用户名 deck",
+    "passwordHint": "默认密码 0000",
+    "passwordSaved": "已保存。关一下共享再打开，新密码就会生效。",
+    "save": "保存",
+    "windowsCache": "Windows 会记住旧密码。改密码后连不上，在 PowerShell 里运行：",
+    "feedback": "反馈问题",
+    "logsHint": "存成文本文件放在 ~/Downloads，提 issue 时附上",
+    "export": "导出",
+    "danger": "危险操作",
+    "uninstall": "卸载",
+    "uninstallHint": "停止共享并删掉 samba 包",
+    "uninstallConfirm": "确定卸载 Samba？别的设备会马上断开。共享和密码会保留，SSH 不受影响。",
+    "uninstallFailed": "卸载失败"
+  },
   "uninstall": {
-    "title": "正在卸载 Samba",
-    "status": "状态",
-    "removing": "正在移除和清理..."
+    "removing": "正在卸载..."
   },
   "logs": {
     "export": "导出日志",
     "exporting": "导出中...",
-    "saved": "已保存到 {{path}}",
     "failed": "导出日志失败"
+  },
+  "ssh": {
+    "title": "远程访问",
+    "running": "运行中",
+    "stopped": "已关闭",
+    "starting": "正在开启...",
+    "stopping": "正在关闭...",
+    "failed": "无法切换 SSH"
   }
 }

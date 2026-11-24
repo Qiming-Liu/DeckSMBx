@@ -1,57 +1,89 @@
 {
   "install": {
-    "title": "Install Samba",
-    "status": "Status",
     "notInstalled": "Samba is not installed",
-    "installing": "Installing...",
+    "why": "Install it so other computers can see this Deck",
     "installButton": "Install Samba",
-    "error": "Error",
     "installFailed": "Installation failed",
-    "note": "Note: SteamOS updates will remove Samba due to its immutable filesystem. You will need to reinstall after each system update. Your shares and password will be preserved."
+    "note": "SteamOS updates remove Samba, so reinstall after each update. Your shares and password are kept.",
+    "steps": {
+      "readonly": "Turn off read-only filesystem",
+      "pacman": "Set up pacman",
+      "package": "Install the samba package",
+      "config": "Write the config",
+      "password": "Set the default password",
+      "firewall": "Open the firewall",
+      "discovery": "Turn on network discovery",
+      "services": "Start the services"
+    }
   },
   "modal": {
-    "ok": "OK",
     "cancel": "Cancel"
   },
   "folderBrowser": {
-    "title": "Select Folder",
+    "title": "Add Folder",
     "loading": "Loading...",
     "noSubfolders": "No subfolders",
     "shareThisFolder": "Share This Folder",
-    "shareAlreadyExists": "Share already exists"
+    "shareAlreadyExists": "This folder is already shared",
+    "willShareAs": "Shared as \"{{name}}\"",
+    "home": "Home",
+    "removable": "SD card & USB"
   },
   "shares": {
-    "title": "Shared Folders",
-    "noShares": "No shares configured",
-    "remove": "Remove \"{{name}}\""
+    "title": "Shared folders",
+    "noShares": "No folders shared yet",
+    "more": "More",
+    "pause": "Pause sharing",
+    "resume": "Resume sharing",
+    "remove": "Remove",
+    "removed": "Removed \"{{name}}\"",
+    "undo": "Undo"
   },
   "server": {
-    "title": "Samba Server",
+    "title": "File sharing",
     "loading": "Loading...",
-    "pleaseWait": "Please wait",
-    "smbService": "SMB Service",
+    "sharing": "Sharing",
+    "notSharing": "Sharing is off",
     "stopping": "Stopping...",
     "starting": "Starting...",
-    "running": "Running",
-    "stopped": "Stopped",
-    "username": "Username",
-    "addFolders": "Add Folders",
-    "changePassword": "Change Password",
-    "changePasswordTitle": "Change SMB Password",
-    "newPassword": "New Password",
+    "summary": "User deck · {{count}} folders",
+    "toggleFailed": "Could not change sharing",
+    "addFolders": "Add folder",
     "passwordEmpty": "Password cannot be empty",
     "passwordFailed": "Failed to set password",
     "uninstallSamba": "Uninstall Samba"
   },
+  "settings": {
+    "title": "Settings",
+    "password": "Samba password",
+    "passwordTitle": "User deck",
+    "passwordHint": "Default password is 0000",
+    "passwordSaved": "Saved. Turn sharing off and on again to use the new password.",
+    "save": "Save",
+    "windowsCache": "Windows remembers the old password. If it can't connect, run in PowerShell:",
+    "feedback": "Report a problem",
+    "logsHint": "Saved as a text file in ~/Downloads. Attach it to the issue.",
+    "export": "Export",
+    "danger": "Danger zone",
+    "uninstall": "Uninstall",
+    "uninstallHint": "Stops sharing and removes the samba package",
+    "uninstallConfirm": "Uninstall Samba? Other devices disconnect right away. Shares and password are kept, SSH is not affected.",
+    "uninstallFailed": "Uninstall failed"
+  },
   "uninstall": {
-    "title": "Uninstalling Samba",
-    "status": "Status",
-    "removing": "Removing and cleaning..."
+    "removing": "Removing..."
   },
   "logs": {
-    "export": "Export Logs",
+    "export": "Export logs",
     "exporting": "Exporting...",
-    "saved": "Saved to {{path}}",
     "failed": "Failed to export logs"
+  },
+  "ssh": {
+    "title": "Remote access",
+    "running": "Running",
+    "stopped": "Off",
+    "starting": "Starting...",
+    "stopping": "Stopping...",
+    "failed": "Could not change SSH"
   }
 }
