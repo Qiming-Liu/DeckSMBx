@@ -10,6 +10,10 @@ const resources: Record<string, TranslationData> = {
 
 let currentLanguage = "en-US";
 
+export function getLanguage(): string {
+  return currentLanguage;
+}
+
 export function loadTranslations(): void {
   try {
     const steamLang = navigator.language || "en-US";

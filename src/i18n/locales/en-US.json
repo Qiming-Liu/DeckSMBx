@@ -55,20 +55,25 @@
   },
   "settings": {
     "title": "Settings",
-    "password": "Samba password",
-    "passwordTitle": "User deck",
-    "passwordHint": "Default password is 0000",
+    "passwordHint": "User deck · default password 0000",
     "passwordSaved": "Saved. Turn sharing off and on again to use the new password.",
     "save": "Save",
-    "windowsCache": "Windows remembers the old password. If it can't connect, run in PowerShell:",
+    "windowsCache": "Can't connect after changing the password? Run in PowerShell:",
     "feedback": "Report a problem",
     "logsHint": "Saved as a text file in ~/Downloads. Attach it to the issue.",
     "export": "Export",
     "danger": "Danger zone",
     "uninstall": "Uninstall",
     "uninstallHint": "Stops sharing and removes the samba package",
-    "uninstallConfirm": "Uninstall Samba? Other devices disconnect right away. Shares and password are kept, SSH is not affected.",
-    "uninstallFailed": "Uninstall failed"
+    "uninstallConfirm": "Other devices disconnect right away. Shares and password are kept.",
+    "uninstallFailed": "Uninstall failed",
+    "changePassword": "Change password",
+    "change": "Change",
+    "passwordFor": "User deck. Other devices use this password to connect.",
+    "uninstallAgain": "Press again to uninstall",
+    "connect": "How to connect",
+    "userHint": "User deck",
+    "installFromPanel": "Install it from the Quick Access menu"
   },
   "uninstall": {
     "removing": "Removing..."

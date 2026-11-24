@@ -1,97 +1,129 @@
-import { Focusable, Navigation, TextField } from "@decky/ui";
-import { FC, useEffect, useState } from "react";
-import { FaFileAlt, FaKey, FaTrash } from "react-icons/fa";
-import { exportLogs, getSambaStatus, setSambaPassword, uninstallSamba } from "../api";
+import { Focusable, ModalRoot, Navigation, TextField, showModal } from "@decky/ui";
+import { FC, ReactNode, useEffect, useState } from "react";
+import { SambaStatus, exportLogs, getSambaStatus, setSambaPassword, uninstallSamba } from "../api";
 import { t } from "../i18n/translations";
-import { Button, Note, Page, Row, SectionTitle, colors, mono } from "../ui";
+import { Button, Card, Note, Page, PageStyle, Row, SectionTitle, colors, mono } from "../ui";
 
-/** Everything that is not used every day, on one page: password, logs, uninstall. */
-const Settings: FC = () => {
-  const [installed, setInstalled] = useState(false);
+const value = (text: ReactNode, code = true) => (
+  <div style={{ fontSize: 16, color: colors.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", ...(code ? { ...mono, fontSize: 15 } : {}) }}>{text}</div>
+);
+
+const PasswordModal: FC<{ closeModal?: () => void; onSaved: () => void }> = ({ closeModal, onSaved }) => {
   const [password, setPassword] = useState("");
-  const [passwordInfo, setPasswordInfo] = useState<{ ok: boolean; text: string } | null>(null);
-  const [savingPassword, setSavingPassword] = useState(false);
-  const [logInfo, setLogInfo] = useState<{ ok: boolean; text: string } | null>(null);
-  const [exporting, setExporting] = useState(false);
-  const [confirming, setConfirming] = useState(false);
-  const [uninstalling, setUninstalling] = useState(false);
-  const [uninstallError, setUninstallError] = useState("");
-
-  useEffect(() => { getSambaStatus().then((s) => setInstalled(s.installed)).catch(() => {}); }, []);
-
-  const savePassword = async () => {
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const save = async () => {
     if (!password) {
-      setPasswordInfo({ ok: false, text: t("server.passwordEmpty") });
+      setError(t("server.passwordEmpty"));
       return;
     }
-    setSavingPassword(true);
+    setSaving(true);
     const result = await setSambaPassword(password).catch((e) => ({ success: false, error: String(e) }));
-    setPasswordInfo(result.success ? { ok: true, text: t("settings.passwordSaved") } : { ok: false, text: result.error || t("server.passwordFailed") });
-    if (result.success) setPassword("");
-    setSavingPassword(false);
+    setSaving(false);
+    if (!result.success) {
+      setError(result.error || t("server.passwordFailed"));
+      return;
+    }
+    onSaved();
+    closeModal?.();
   };
+  return <ModalRoot closeModal={closeModal} className="smb-font smb-dialog">
+    <PageStyle />
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700, color: colors.text }}>{t("settings.changePassword")}</div>
+      <div style={{ fontSize: 13, color: colors.muted }}>{t("settings.passwordFor")}</div>
+      <TextField bIsPassword value={password} onChange={(e: any) => setPassword(e?.target?.value ?? "")} />
+      {error && <Note tone="danger">{error}</Note>}
+      <Focusable flow-children="row" style={{ display: "flex", justifyContent: "flex-end", gap: 8, paddingTop: 4 }}>
+        <Button ghost onClick={closeModal}>{t("modal.cancel")}</Button>
+        <Button primary disabled={saving} onClick={save} style={{ padding: "0 22px" }}>{t("settings.save")}</Button>
+      </Focusable>
+    </div>
+  </ModalRoot>;
+};
+
+/** Settings in two columns like DeckyGCM's: actions on the left, how to connect on the right. */
+const Settings: FC = () => {
+  const [samba, setSamba] = useState<SambaStatus | null>(null);
+  const [message, setMessage] = useState<{ tone: "warning" | "danger"; text: string } | null>(null);
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [logPath, setLogPath] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [uninstall, setUninstall] = useState<"idle" | "confirm" | "busy">("idle");
+
+  useEffect(() => { getSambaStatus().then(setSamba).catch(() => {}); }, []);
 
   const saveLogs = async () => {
     setExporting(true);
+    setMessage(null);
     const result = await exportLogs().catch((e) => ({ success: false, error: String(e), path: "" }));
-    setLogInfo(result.success ? { ok: true, text: String(result.path) } : { ok: false, text: result.error || t("logs.failed") });
+    if (result.success) setLogPath(String(result.path));
+    else setMessage({ tone: "danger", text: result.error || t("logs.failed") });
     setExporting(false);
   };
 
-  const uninstall = async () => {
-    setUninstalling(true);
-    setUninstallError("");
+  // A second press confirms, like DeckyGCM's reset.
+  const pressUninstall = async () => {
+    if (uninstall === "idle") {
+      setUninstall("confirm");
+      return;
+    }
+    setUninstall("busy");
+    setMessage(null);
     const result = await uninstallSamba().catch((e) => ({ success: false, error: String(e) }));
-    setUninstalling(false);
-    setConfirming(false);
-    if (result.success) Navigation.NavigateBack();
-    else setUninstallError(result.error || t("settings.uninstallFailed"));
+    if (result.success) {
+      Navigation.NavigateBack();
+      return;
+    }
+    setMessage({ tone: "danger", text: result.error || t("settings.uninstallFailed") });
+    setUninstall("idle");
   };
 
+  const installed = Boolean(samba?.installed);
+  const ip = samba?.ip || "";
+  const host = (samba?.netbios_name || "steamdeck").toUpperCase();
+
   return <Page title={t("settings.title")}>
-    <Focusable flow-children="column" style={{ width: "100%", maxWidth: 720, display: "flex", flexDirection: "column" }}>
-      {installed && <>
-        <SectionTitle first>{t("settings.password")}</SectionTitle>
-        <Row icon={<FaKey />} title={t("settings.passwordTitle")}
-          description={passwordInfo ? passwordInfo.text : t("settings.passwordHint")}>
-          <div style={{ width: 200 }}>
-            <TextField bIsPassword value={password} onChange={(e: any) => setPassword(e?.target?.value ?? "")} />
-          </div>
-          <Button primary disabled={savingPassword} onClick={savePassword}>{t("settings.save")}</Button>
-        </Row>
-        {passwordInfo && !passwordInfo.ok && <Note tone="danger" style={{ marginTop: 6 }}>{passwordInfo.text}</Note>}
-        <Note style={{ marginTop: 8 }}>
-          {t("settings.windowsCache")} <span style={mono}>net use \\STEAMDECK\IPC$ /delete</span>
-        </Note>
-      </>}
-
-      <SectionTitle first={!installed}>{t("settings.feedback")}</SectionTitle>
-      <Row icon={<FaFileAlt />} title={t("logs.export")} code={logInfo?.ok}
-        description={logInfo ? logInfo.text : t("settings.logsHint")}>
-        <Button disabled={exporting} onClick={saveLogs}>{exporting ? t("logs.exporting") : t("settings.export")}</Button>
-      </Row>
-
-      {installed && <>
-        <SectionTitle>{t("settings.danger")}</SectionTitle>
-        {confirming ? (
-          <Focusable flow-children="row" style={{
-            display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: 12, borderRadius: 4,
-            background: "rgba(227,91,91,.08)", border: "1px solid rgba(227,91,91,.3)",
-          }}>
-            <span style={{ flex: "1 1 240px", fontSize: 13, color: colors.soft }}>{t("settings.uninstallConfirm")}</span>
-            <Button ghost disabled={uninstalling} onClick={() => setConfirming(false)}>{t("modal.cancel")}</Button>
-            <Button disabled={uninstalling} onClick={uninstall} style={{ background: colors.danger }}>
-              {uninstalling ? t("uninstall.removing") : t("settings.uninstall")}
-            </Button>
-          </Focusable>
-        ) : (
-          <Row icon={<FaTrash color={colors.danger} />} title={t("server.uninstallSamba")} description={t("settings.uninstallHint")}>
-            <Button danger onClick={() => setConfirming(true)}>{t("settings.uninstall")}…</Button>
+    {message && <Note tone={message.tone}>{message.text}</Note>}
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0 clamp(24px, 4vw, 56px)", alignItems: "flex-start" }}>
+      <Focusable flow-children="column" style={{ flex: "1 1 420px", minWidth: 0, display: "flex", flexDirection: "column" }}>
+        {installed && <>
+          <SectionTitle first>Samba</SectionTitle>
+          <Row title={t("settings.changePassword")}
+            description={passwordSaved ? t("settings.passwordSaved") : t("settings.passwordHint")}>
+            <Button onClick={() => showModal(<PasswordModal onSaved={() => setPasswordSaved(true)} />)}>{t("settings.change")}</Button>
           </Row>
+          <Row title={t("server.uninstallSamba")} titleColor={uninstall === "confirm" ? colors.danger : undefined}
+            description={uninstall === "confirm" ? t("settings.uninstallConfirm") : t("settings.uninstallHint")}>
+            <Button danger={uninstall === "idle"} disabled={uninstall === "busy"} onClick={pressUninstall}
+              style={uninstall === "confirm" ? { background: colors.danger } : undefined}>
+              {uninstall === "busy" ? t("uninstall.removing") : uninstall === "confirm" ? t("settings.uninstallAgain") : t("settings.uninstall")}
+            </Button>
+          </Row>
+        </>}
+        <SectionTitle first={!installed}>{t("settings.feedback")}</SectionTitle>
+        <Row title={t("logs.export")} code={Boolean(logPath)} description={logPath || t("settings.logsHint")}>
+          <Button disabled={exporting} onClick={saveLogs}>{exporting ? t("logs.exporting") : t("settings.export")}</Button>
+        </Row>
+        <div style={{ borderTop: `1px solid ${colors.line}` }} />
+      </Focusable>
+
+      <Focusable flow-children="column" style={{ flex: "1 1 360px", minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <SectionTitle first>{t("settings.connect")}</SectionTitle>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {installed ? <>
+          <Card label="Windows" hint={<>{t("settings.windowsCache")} <span style={mono}>net use \\{host}\IPC$ /delete</span></>}>
+            {value(`\\\\${host}`)}
+          </Card>
+          <Card label="Mac / Linux" hint={t("settings.userHint")}>
+            {value(`smb://${ip || `${samba?.netbios_name || "steamdeck"}.local`}`)}
+          </Card>
+        </> : (
+          <Card label="Samba" hint={t("settings.installFromPanel")}>{value(t("install.notInstalled"), false)}</Card>
         )}
-        {uninstallError && <Note tone="danger" style={{ marginTop: 6 }}>{uninstallError}</Note>}
-      </>}
-    </Focusable>
+        </div>
+      </Focusable>
+    </div>
   </Page>;
 };
 

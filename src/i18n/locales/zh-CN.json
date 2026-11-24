@@ -55,20 +55,25 @@
   },
   "settings": {
     "title": "设置",
-    "password": "Samba 密码",
-    "passwordTitle": "用户名 deck",
-    "passwordHint": "默认密码 0000",
+    "passwordHint": "用户名 deck · 默认密码 0000",
     "passwordSaved": "已保存。关一下共享再打开，新密码就会生效。",
     "save": "保存",
-    "windowsCache": "Windows 会记住旧密码。改密码后连不上，在 PowerShell 里运行：",
+    "windowsCache": "改密码后连不上？在 PowerShell 里运行：",
     "feedback": "反馈问题",
     "logsHint": "存成文本文件放在 ~/Downloads，提 issue 时附上",
     "export": "导出",
     "danger": "危险操作",
     "uninstall": "卸载",
     "uninstallHint": "停止共享并删掉 samba 包",
-    "uninstallConfirm": "确定卸载 Samba？别的设备会马上断开。共享和密码会保留，SSH 不受影响。",
-    "uninstallFailed": "卸载失败"
+    "uninstallConfirm": "别的设备会马上断开。共享和密码会保留。",
+    "uninstallFailed": "卸载失败",
+    "changePassword": "修改密码",
+    "change": "修改",
+    "passwordFor": "用户名 deck。别的设备连这台机器时用这个密码。",
+    "uninstallAgain": "再按一次卸载",
+    "connect": "连接方式",
+    "userHint": "用户名 deck",
+    "installFromPanel": "在快捷菜单里安装"
   },
   "uninstall": {
     "removing": "正在卸载..."

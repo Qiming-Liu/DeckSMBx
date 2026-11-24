@@ -1,6 +1,7 @@
 import { DialogButton, Focusable, Navigation, PanelSectionRow } from "@decky/ui";
 import type { CSSProperties, ReactNode } from "react";
-import { FaArrowLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getLanguage } from "./i18n/translations";
 
 // Building blocks shared by the Quick Access panel and the full-screen pages,
 // in the style of DeckyGCM: dark wells, thin row lines, switches on the right.
@@ -20,6 +21,30 @@ export const FOCUS_CSS = `
 .smb-row.gpfocus, .smb-row.gpfocuswithin { background: rgba(255,255,255,.1) !important; }
 `;
 export const Style = () => <style>{FOCUS_CSS}</style>;
+
+// Full-screen pages and dialogs use the system CJK font, like Steam's own pages.
+const pageCss = () => {
+  const font = getLanguage().startsWith("zh") ? "Noto Sans CJK SC" : "Noto Sans";
+  return `
+.smb-font, .smb-font .DialogButton:not([style*="monospace"]), .smb-font input { font-family: "${font}", "Motiva Sans", sans-serif !important; }
+.DialogContent.smb-dialog { width: 560px; max-width: 100%; box-sizing: border-box; padding: 28px 32px 24px !important; border-radius: 6px; background: #1f2126 !important; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+.smb-dialog .DialogInput { height: 46px; box-sizing: border-box; padding: 0 14px !important; border: 1px solid rgba(255,255,255,.14); border-radius: 3px; background: rgba(0,0,0,.35) !important; color: #fff; }
+${FOCUS_CSS.trim()}`;
+};
+export const PageStyle = () => <style>{pageCss()}</style>;
+
+/** A small card: label, value, hint and an optional button, like DeckyGCM's storage cards. */
+export function Card({ label, children, hint, action }: { label: ReactNode; children: ReactNode; hint?: ReactNode; action?: ReactNode }) {
+  return <Focusable flow-children="column" style={{
+    boxSizing: "border-box", padding: "12px 14px", borderRadius: 4, background: colors.well,
+    display: "flex", flexDirection: "column", gap: 6, minWidth: 0,
+  }}>
+    <div style={{ fontSize: 12, color: colors.muted }}>{label}</div>
+    {children}
+    {hint && <div style={{ fontSize: 12, color: colors.dim, overflowWrap: "anywhere" }}>{hint}</div>}
+    {action}
+  </Focusable>;
+}
 
 export function SectionTitle({ children, first, aside }: { children: ReactNode; first?: boolean; aside?: ReactNode }) {
   return <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: colors.muted, fontWeight: 500, padding: `${first ? 2 : 16}px 4px 6px` }}>
@@ -41,14 +66,15 @@ export interface RowProps {
   /** Controls at the row's end: buttons, a switch. */
   children?: ReactNode;
   boxed?: boolean;
+  titleColor?: string;
 }
 
 /** One list row: icon, title + description, controls on the right. */
-export function Row({ icon, title, description, code, off, onActivate, onOptions, optionsLabel, children, boxed }: RowProps) {
+export function Row({ icon, title, description, code, off, onActivate, onOptions, optionsLabel, children, boxed, titleColor }: RowProps) {
   const main = <>
     {icon && <span aria-hidden style={{ display: "inline-flex", flex: "0 0 auto", color: colors.muted }}>{icon}</span>}
     <div style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", gap: 1 }}>
-      <div style={{ fontSize: 15, color: off ? colors.muted : colors.text, ...ellipsis }}>{title}</div>
+      <div style={{ fontSize: 15, color: titleColor || (off ? colors.muted : colors.text), ...ellipsis }}>{title}</div>
       {description && <div style={{ fontSize: 12, color: colors.muted, ...ellipsis, ...(code ? mono : {}) }}>{description}</div>}
     </div>
   </>;
@@ -105,16 +131,16 @@ export function PanelLink({ route, icon, children }: { route: string; icon: Reac
 export function Page({ title, children, actions, onSecondary, secondaryLabel }: {
   title: string; children: ReactNode; actions?: ReactNode; onSecondary?: () => void; secondaryLabel?: string;
 }) {
-  return <Focusable flow-children="column" onSecondaryButton={onSecondary} onSecondaryActionDescription={onSecondary ? secondaryLabel : undefined}
+  return <Focusable flow-children="column" className="smb-font" onSecondaryButton={onSecondary} onSecondaryActionDescription={onSecondary ? secondaryLabel : undefined}
     style={{
       position: "absolute", inset: 0, boxSizing: "border-box", overflowY: "auto",
       padding: "clamp(48px, 8.5vh, 68px) clamp(24px, 4vw, 48px) clamp(52px, 8vh, 64px)",
       background: "linear-gradient(180deg, #0e141b 0%, #151c24 100%)", color: colors.soft, display: "flex", flexDirection: "column", gap: 12,
     }}>
-    <Style />
+    <PageStyle />
     <Focusable flow-children="row" style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <IconButton label="Back" style={{ background: colors.button, color: colors.text, width: 40, minWidth: 40, height: 40 }}
-        onClick={() => Navigation.NavigateBack()}><FaArrowLeft /></IconButton>
+        onClick={() => Navigation.NavigateBack()}><FaChevronLeft /></IconButton>
       <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: colors.text, flex: "1 1 auto", minWidth: 0, ...ellipsis }}>{title}</h1>
       {actions}
     </Focusable>
