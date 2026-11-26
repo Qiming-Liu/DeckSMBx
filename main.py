@@ -7,8 +7,12 @@ from typing import Optional
 import decky
 import asyncio
 import json
+import re
 import shlex
 import time
+
+# "[2026-11-26 11:18:00,792][WARNING]: message", as Decky writes plugin logs.
+LOG_LINE = re.compile(r"^\[\d{4}-\d{2}-\d{2} (?P<time>\d{2}:\d{2}:\d{2})[,.]\d+\]\[(?P<level>[A-Z]+)\]: ?(?P<message>.*)$")
 
 
 class Plugin:
@@ -404,6 +408,30 @@ class Plugin:
             return {"repaired": True}
         await self._stop_discovery()
         return {"repaired": False}
+
+    async def get_version(self) -> str:
+        return decky.DECKY_PLUGIN_VERSION
+
+    async def get_log(self, count: int = 200) -> list:
+        """The newest lines of the plugin's current log, split into time, level and message."""
+        try:
+            names = sorted(os.listdir(decky.DECKY_PLUGIN_LOG_DIR))
+            if not names:
+                return []
+            with open(os.path.join(decky.DECKY_PLUGIN_LOG_DIR, names[-1]), "r", errors="replace") as f:
+                raw = f.read().splitlines()
+        except Exception as e:
+            decky.logger.error(f"Read log failed: {e}")
+            return []
+        lines = []
+        for text in raw:
+            match = LOG_LINE.match(text)
+            if match:
+                lines.append({"time": match["time"], "level": match["level"], "message": match["message"]})
+            elif lines:
+                # A traceback or other multi-line message: keep it with its line.
+                lines[-1]["message"] += "\n" + text
+        return lines[-count:]
 
     async def export_logs(self) -> dict:
         try:

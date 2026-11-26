@@ -43,3 +43,12 @@ export const toggleSsh = callable<[boolean], Result>("toggle_ssh");
 
 /** The share name a folder gets: its last path part. */
 export const shareNameOf = (path: string) => path.replace(/\/+$/, "").split("/").pop() || "root";
+
+export interface LogLine {
+  time: string;
+  level: string;
+  message: string;
+}
+
+export const getLog = callable<[number], LogLine[]>("get_log");
+export const getVersion = callable<[], string>("get_version");

@@ -1,13 +1,13 @@
 import { Focusable, Menu, MenuItem, Navigation, PanelSection, PanelSectionRow, Toggle, showContextMenu, useQuickAccessVisible } from "@decky/ui";
 import { addEventListener, removeEventListener } from "@decky/api";
 import { FC, useEffect, useRef, useState } from "react";
-import { FaCog, FaEllipsisH, FaFolder, FaPlus, FaSdCard, FaTerminal } from "react-icons/fa";
+import { FaCog, FaEllipsisH, FaFolder, FaInfoCircle, FaPlus, FaSdCard, FaTerminal } from "react-icons/fa";
 import {
   SambaStatus, Share, SshStatus, addShare, checkAndRepair, getSambaStatus, getShares, getSshStatus, installSamba,
   removeShare, toggleSamba, toggleShare, toggleSsh,
 } from "./api";
 import { t } from "./i18n/translations";
-import { PICKER_ROUTE, SETTINGS_ROUTE } from "./routes";
+import { ABOUT_ROUTE, PICKER_ROUTE, SETTINGS_ROUTE } from "./routes";
 import { Button, Note, PanelLink, Row, SectionTitle, Style, colors, mono } from "./ui";
 
 /** SSH sits on top: it works whether or not Samba is installed. */
@@ -256,6 +256,7 @@ const Panel: FC = () => {
       </Focusable>
     </PanelSectionRow>
     <PanelLink route={SETTINGS_ROUTE} icon={<FaCog />}>{t("settings.title")}</PanelLink>
+    <PanelLink route={ABOUT_ROUTE} icon={<FaInfoCircle />}>{t("about.title")}</PanelLink>
   </PanelSection>;
 };
 

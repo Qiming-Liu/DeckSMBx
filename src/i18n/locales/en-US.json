@@ -59,10 +59,6 @@
     "passwordSaved": "Saved. Turn sharing off and on again to use the new password.",
     "save": "Save",
     "windowsCache": "Can't connect after changing the password? Run in PowerShell:",
-    "feedback": "Report a problem",
-    "logsHint": "Saved as a text file in ~/Downloads. Attach it to the issue.",
-    "export": "Export",
-    "danger": "Danger zone",
     "uninstall": "Uninstall",
     "uninstallHint": "Stops sharing and removes the samba package",
     "uninstallConfirm": "Other devices disconnect right away. Shares and password are kept.",
@@ -90,5 +86,25 @@
     "starting": "Starting...",
     "stopping": "Stopping...",
     "failed": "Could not change SSH"
+  },
+  "about": {
+    "title": "About",
+    "plugin": "Decky plugin",
+    "version": "Version",
+    "feedback": "Report a problem",
+    "feedbackHint": "Attach the exported log",
+    "openIssue": "Open an issue",
+    "thanks": "Thanks",
+    "originalHint": "The original plugin",
+    "recommended": "Recommended",
+    "gcmHint": "Game trainers on Steam Deck",
+    "creamDeckHint": "DLC unlocker for Proton games",
+    "deckyDshHint": "DeepSeek AI assistant",
+    "bilibili": "Bilibili",
+    "log": "Log",
+    "recentLines": "Last {{count}} lines",
+    "logEmpty": "No log yet",
+    "export": "Export log",
+    "exportedTo": "Saved to {{path}}"
   }
 }

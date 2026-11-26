@@ -1,6 +1,6 @@
 import { Focusable, ModalRoot, Navigation, TextField, showModal } from "@decky/ui";
 import { FC, ReactNode, useEffect, useState } from "react";
-import { SambaStatus, exportLogs, getSambaStatus, setSambaPassword, uninstallSamba } from "../api";
+import { SambaStatus, getSambaStatus, setSambaPassword, uninstallSamba } from "../api";
 import { t } from "../i18n/translations";
 import { Button, Card, Note, Page, PageStyle, Row, SectionTitle, colors, mono } from "../ui";
 
@@ -42,25 +42,14 @@ const PasswordModal: FC<{ closeModal?: () => void; onSaved: () => void }> = ({ c
   </ModalRoot>;
 };
 
-/** Settings in two columns like DeckyGCM's: actions on the left, how to connect on the right. */
+/** Samba settings on the left, how to connect on the right, like DeckyGCM's settings page. */
 const Settings: FC = () => {
   const [samba, setSamba] = useState<SambaStatus | null>(null);
   const [message, setMessage] = useState<{ tone: "warning" | "danger"; text: string } | null>(null);
   const [passwordSaved, setPasswordSaved] = useState(false);
-  const [logPath, setLogPath] = useState("");
-  const [exporting, setExporting] = useState(false);
   const [uninstall, setUninstall] = useState<"idle" | "confirm" | "busy">("idle");
 
   useEffect(() => { getSambaStatus().then(setSamba).catch(() => {}); }, []);
-
-  const saveLogs = async () => {
-    setExporting(true);
-    setMessage(null);
-    const result = await exportLogs().catch((e) => ({ success: false, error: String(e), path: "" }));
-    if (result.success) setLogPath(String(result.path));
-    else setMessage({ tone: "danger", text: result.error || t("logs.failed") });
-    setExporting(false);
-  };
 
   // A second press confirms, like DeckyGCM's reset.
   const pressUninstall = async () => {
@@ -87,8 +76,9 @@ const Settings: FC = () => {
     {message && <Note tone={message.tone}>{message.text}</Note>}
     <div style={{ display: "flex", flexWrap: "wrap", gap: "0 clamp(24px, 4vw, 56px)", alignItems: "flex-start" }}>
       <Focusable flow-children="column" style={{ flex: "1 1 420px", minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <SectionTitle first>Samba</SectionTitle>
+        {!installed && <Row title={t("install.notInstalled")} description={t("settings.installFromPanel")} />}
         {installed && <>
-          <SectionTitle first>Samba</SectionTitle>
           <Row title={t("settings.changePassword")}
             description={passwordSaved ? t("settings.passwordSaved") : t("settings.passwordHint")}>
             <Button onClick={() => showModal(<PasswordModal onSaved={() => setPasswordSaved(true)} />)}>{t("settings.change")}</Button>
@@ -101,10 +91,6 @@ const Settings: FC = () => {
             </Button>
           </Row>
         </>}
-        <SectionTitle first={!installed}>{t("settings.feedback")}</SectionTitle>
-        <Row title={t("logs.export")} code={Boolean(logPath)} description={logPath || t("settings.logsHint")}>
-          <Button disabled={exporting} onClick={saveLogs}>{exporting ? t("logs.exporting") : t("settings.export")}</Button>
-        </Row>
         <div style={{ borderTop: `1px solid ${colors.line}` }} />
       </Focusable>
 
