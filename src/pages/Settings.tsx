@@ -1,8 +1,10 @@
 import { Focusable, ModalRoot, Navigation, TextField, showModal } from "@decky/ui";
 import { FC, ReactNode, useEffect, useState } from "react";
+import { FaCog, FaInfoCircle } from "react-icons/fa";
 import { SambaStatus, getSambaStatus, setSambaPassword, uninstallSamba } from "../api";
 import { t } from "../i18n/translations";
-import { Button, Card, Note, Page, PageStyle, Row, SectionTitle, colors, mono } from "../ui";
+import { Button, Card, Note, Page, PageStyle, Row, SectionTitle, SideTab, colors, mono } from "../ui";
+import { AboutTab } from "./About";
 
 const value = (text: ReactNode, code = true) => (
   <div style={{ fontSize: 16, color: colors.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", ...(code ? { ...mono, fontSize: 15 } : {}) }}>{text}</div>
@@ -43,7 +45,7 @@ const PasswordModal: FC<{ closeModal?: () => void; onSaved: () => void }> = ({ c
 };
 
 /** Samba settings on the left, how to connect on the right, like DeckyGCM's settings page. */
-const Settings: FC = () => {
+const SettingsTab: FC = () => {
   const [samba, setSamba] = useState<SambaStatus | null>(null);
   const [message, setMessage] = useState<{ tone: "warning" | "danger"; text: string } | null>(null);
   const [passwordSaved, setPasswordSaved] = useState(false);
@@ -72,10 +74,10 @@ const Settings: FC = () => {
   const ip = samba?.ip || "";
   const host = (samba?.netbios_name || "steamdeck").toUpperCase();
 
-  return <Page title={t("settings.title")}>
-    {message && <Note tone={message.tone}>{message.text}</Note>}
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "0 clamp(24px, 4vw, 56px)", alignItems: "flex-start" }}>
-      <Focusable flow-children="column" style={{ flex: "1 1 420px", minWidth: 0, display: "flex", flexDirection: "column" }}>
+  return <>
+    {message && <Note tone={message.tone} style={{ marginBottom: 8 }}>{message.text}</Note>}
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0 clamp(24px, 3vw, 40px)", alignItems: "flex-start" }}>
+      <Focusable flow-children="column" style={{ flex: "1 1 320px", minWidth: 0, display: "flex", flexDirection: "column" }}>
         <SectionTitle first>Samba</SectionTitle>
         {!installed && <Row title={t("install.notInstalled")} description={t("settings.installFromPanel")} />}
         {installed && <>
@@ -94,7 +96,7 @@ const Settings: FC = () => {
         <div style={{ borderTop: `1px solid ${colors.line}` }} />
       </Focusable>
 
-      <Focusable flow-children="column" style={{ flex: "1 1 360px", minWidth: 0, display: "flex", flexDirection: "column" }}>
+      <Focusable flow-children="column" style={{ flex: "1 1 280px", minWidth: 0, display: "flex", flexDirection: "column" }}>
         <SectionTitle first>{t("settings.connect")}</SectionTitle>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {installed ? <>
@@ -108,6 +110,24 @@ const Settings: FC = () => {
           <Card label="Samba" hint={t("settings.installFromPanel")}>{value(t("install.notInstalled"), false)}</Card>
         )}
         </div>
+      </Focusable>
+    </div>
+  </>;
+};
+
+type Tab = "settings" | "about";
+
+/** The settings page: a sidebar with Settings and About on the left, the chosen tab on the right. */
+const Settings: FC = () => {
+  const [tab, setTab] = useState<Tab>("settings");
+  return <Page title={t("settings.title")}>
+    <div style={{ display: "flex", gap: 20, flex: "1 1 auto", minHeight: 0 }}>
+      <Focusable flow-children="column" style={{ flex: "0 0 200px", display: "flex", flexDirection: "column", gap: 2 }}>
+        <SideTab icon={<FaCog />} label={t("settings.title")} current={tab === "settings"} onClick={() => setTab("settings")} />
+        <SideTab icon={<FaInfoCircle />} label={t("about.title")} current={tab === "about"} onClick={() => setTab("about")} />
+      </Focusable>
+      <Focusable flow-children="column" style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column" }}>
+        {tab === "settings" ? <SettingsTab /> : <AboutTab />}
       </Focusable>
     </div>
   </Page>;

@@ -17,24 +17,14 @@ DeckSMB+ is a fork of [DeckSMB](https://github.com/bonorca/DeckSMB) by chillibea
 
 ## Features
 
-<img src="assets/main.jpg" width="340" alt="DeckSMB+ panel"/>
+<p align="center">
+  <img src="assets/main.jpg" width="340" alt="DeckSMB+ panel"/>
+</p>
 
 - **SSH switch** — turn the SSH server on or off; works without Samba
 - **One-click Samba setup** — install and uninstall, with progress by step
 - **Start / Stop** — SMB service with a toggle; the Windows and Mac addresses are shown
 - **Manage shared folders** — add, pause, resume and remove shares, with undo
-
-<img src="assets/picker.jpg" alt="Add Folder page"/>
-
-Pick a folder to share from your home folder or an SD card / USB drive.
-
-<img src="assets/settings.jpg" alt="Settings page"/>
-
-**Settings:** change the Samba password, uninstall Samba, and see how to connect from Windows and Mac / Linux.
-
-<img src="assets/about.jpg" alt="About page"/>
-
-**About:** version, feedback, recommended plugins, and the plugin's live log with an export button.
 
 ## Quick Start
 
@@ -79,7 +69,7 @@ Then reconnect and enter the new password.
 
 ## Feedback
 
-Feel free to open an [issue](https://github.com/Qiming-Liu/DeckSMBx/issues/new) if you encounter any problems. Please go to **About** → **Log** in the plugin and press the export button first and attach the file from `~/Downloads`.
+Feel free to open an [issue](https://github.com/Qiming-Liu/DeckSMBx/issues/new) if you encounter any problems. Please go to **Settings** → **About** in the plugin and press the export button above the log first and attach the file from `~/Downloads`.
 
 ## License
 

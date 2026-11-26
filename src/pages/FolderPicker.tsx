@@ -1,22 +1,15 @@
 import { DialogButton, Focusable, Navigation } from "@decky/ui";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { FaChevronRight, FaFolder, FaHdd, FaHome } from "react-icons/fa";
 import { addShare, getShares, listDirs, shareNameOf } from "../api";
 import { t } from "../i18n/translations";
-import { Button, Note, Page, Row, colors, mono } from "../ui";
+import { Button, Note, Page, Row, SideTab, colors, mono } from "../ui";
 
 const HOME = "/home/deck";
 const MEDIA = "/run/media";
 
 const join = (dir: string, name: string) => (dir === "/" ? `/${name}` : `${dir}/${name}`);
 const parentOf = (path: string) => path.replace(/\/[^/]+\/?$/, "") || "/";
-
-const Place: FC<{ icon: ReactNode; label: string; current: boolean; onClick: () => void }> = ({ icon, label, current, onClick }) => (
-  <DialogButton className="smb-ghost" onClick={onClick} style={{
-    width: "100%", minWidth: 0, height: 40, padding: "0 12px", display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-start",
-    fontSize: 14, background: current ? "rgba(255,255,255,.08)" : "transparent", color: current ? colors.text : colors.muted,
-  }}>{icon}{label}</DialogButton>
-);
 
 /** Full-screen folder picker: places on the left, a path you can jump back along, then the subfolders. */
 const FolderPicker: FC = () => {
@@ -57,8 +50,8 @@ const FolderPicker: FC = () => {
     actions={<Button primary disabled={exists || loading} onClick={share}>{t("folderBrowser.shareThisFolder")}</Button>}>
     <div style={{ display: "flex", gap: 20, flex: "1 1 auto", minHeight: 0 }}>
       <Focusable flow-children="column" style={{ flex: "0 0 200px", display: "flex", flexDirection: "column", gap: 2 }}>
-        <Place icon={<FaHome />} label={t("folderBrowser.home")} current={path === HOME || path.startsWith(HOME + "/")} onClick={() => browse(HOME)} />
-        <Place icon={<FaHdd />} label={t("folderBrowser.removable")} current={path === MEDIA || path.startsWith(MEDIA + "/")} onClick={() => browse(MEDIA)} />
+        <SideTab icon={<FaHome />} label={t("folderBrowser.home")} current={path === HOME || path.startsWith(HOME + "/")} onClick={() => browse(HOME)} />
+        <SideTab icon={<FaHdd />} label={t("folderBrowser.removable")} current={path === MEDIA || path.startsWith(MEDIA + "/")} onClick={() => browse(MEDIA)} />
       </Focusable>
       <Focusable flow-children="column" style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column" }}>
         <Focusable flow-children="row" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 2, marginBottom: 8 }}>

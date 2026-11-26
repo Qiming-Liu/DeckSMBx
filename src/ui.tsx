@@ -147,3 +147,11 @@ export function Page({ title, children, actions, onSecondary, secondaryLabel }: 
     {children}
   </Focusable>;
 }
+
+/** A tab in a full-screen page's left sidebar, like the folder picker's places. */
+export function SideTab({ icon, label, current, onClick }: { icon: ReactNode; label: string; current: boolean; onClick: () => void }) {
+  return <DialogButton className="smb-ghost" onClick={onClick} style={{
+    width: "100%", minWidth: 0, height: 40, padding: "0 12px", display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-start",
+    fontSize: 14, background: current ? "rgba(255,255,255,.08)" : "transparent", color: current ? colors.text : colors.muted,
+  }}>{icon}{label}</DialogButton>;
+}

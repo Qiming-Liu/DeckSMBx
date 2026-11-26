@@ -5,7 +5,7 @@ import { FaChevronRight, FaDownload, FaGithub } from "react-icons/fa";
 import { LogLine, exportLogs, getLog, getVersion } from "../api";
 import { AUTHOR_AVATAR, CREAMDECK_LOGO, DECKYDSH_LOGO, DECKYGCM_LOGO, PLUGIN_LOGO } from "../data/images";
 import { getLanguage, t } from "../i18n/translations";
-import { Button, IconButton, Page, Row, SectionTitle, colors, mono } from "../ui";
+import { Button, IconButton, Row, SectionTitle, colors, mono } from "../ui";
 
 const AUTHOR = "ProSS及时行乐";
 const BILIBILI_URL = "https://space.bilibili.com/23706122";
@@ -87,12 +87,12 @@ function LogPanel() {
   </section>;
 }
 
-/** About in two columns like DeckyGCM's: author, plugin, thanks and recommended on the left, the log on the right. */
-const About: FC = () => {
+/** The About tab of the settings page, like DeckyGCM's: author, plugin, thanks and recommended on the left, the log on the right. */
+export const AboutTab: FC = () => {
   const linkButton = { background: colors.button, color: colors.text };
   const [version, setVersion] = useState("");
   useEffect(() => { getVersion().then(setVersion).catch(() => {}); }, []);
-  return <Page title={t("about.title")}>
+  return <>
     {/* One row of columns, so right from the author links reaches the log. */}
     <Focusable flow-children="row" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 24, alignItems: "start" }}>
       <Focusable flow-children="column" style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
@@ -129,7 +129,5 @@ const About: FC = () => {
         <LogPanel />
       </Focusable>
     </Focusable>
-  </Page>;
+  </>;
 };
-
-export default About;

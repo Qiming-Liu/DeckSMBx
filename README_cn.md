@@ -17,24 +17,14 @@ DeckSMB+ fork 自 chillibeaver 的 [DeckSMB](https://github.com/bonorca/DeckSMB)
 
 ## 功能
 
-<img src="assets/main_cn.jpg" width="340" alt="DeckSMB+ 主界面"/>
+<p align="center">
+  <img src="assets/main_cn.jpg" width="340" alt="DeckSMB+ 主界面"/>
+</p>
 
 - **SSH 开关** — 打开或关闭 SSH 服务，不装 Samba 也能用
 - **一键安装 Samba** — 自动安装/卸载，按步骤显示进度
 - **启动 / 停止** — 通过开关切换 SMB 服务，并显示 Windows 和 Mac 的连接地址
 - **管理共享文件夹** — 添加、暂停、恢复和移除共享，移除后可撤销
-
-<img src="assets/picker_cn.jpg" alt="添加文件夹页面"/>
-
-从主目录或 SD 卡和 U 盘里选择要共享的文件夹。
-
-<img src="assets/settings_cn.jpg" alt="设置页面"/>
-
-**设置：** 修改 Samba 密码、卸载 Samba，查看 Windows 和 Mac / Linux 的连接方式。
-
-<img src="assets/about_cn.jpg" alt="关于页面"/>
-
-**关于：** 版本、反馈、推荐插件，以及实时日志和导出按钮。
 
 ## 安装
 
@@ -83,7 +73,7 @@ net use \\STEAMDECK\IPC$ /delete
 
 ## 反馈
 
-如果遇到任何问题，欢迎提交 [issue](https://github.com/Qiming-Liu/DeckSMBx/issues/new)。请先在插件 **关于** → **日志** 里点导出按钮，并附上 `~/Downloads` 里生成的文件。
+如果遇到任何问题，欢迎提交 [issue](https://github.com/Qiming-Liu/DeckSMBx/issues/new)。请先在插件 **设置** → **关于** 里点日志上方的导出按钮，并附上 `~/Downloads` 里生成的文件。
 
 ## 许可证
 
