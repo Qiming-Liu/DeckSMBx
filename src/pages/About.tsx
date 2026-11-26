@@ -3,7 +3,7 @@ import { Focusable, Navigation } from "@decky/ui";
 import { FC, ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaChevronRight, FaDownload, FaGithub } from "react-icons/fa";
 import { LogLine, exportLogs, getLog, getVersion } from "../api";
-import { AUTHOR_AVATAR, CREAMDECK_LOGO, DECKYDSH_LOGO, DECKYGCM_LOGO, PLUGIN_LOGO } from "../data/images";
+import { AUTHOR_AVATAR, CREAMDECK_LOGO, DECKYGCM_LOGO, PLUGIN_LOGO } from "../data/images";
 import { getLanguage, t } from "../i18n/translations";
 import { Button, IconButton, Row, SectionTitle, colors, mono } from "../ui";
 
@@ -13,7 +13,6 @@ const REPOSITORY_URL = "https://github.com/Qiming-Liu/DeckSMBx";
 const ORIGINAL_URL = "https://github.com/bonorca/DeckSMB";
 const DECKYGCM_URL = "https://github.com/Qiming-Liu/Decky-Game-Cheats-Manager#deckygcm";
 const CREAMDECK_URL = "https://github.com/Qiming-Liu/CreamDeck#creamdeck";
-const DECKYDSH_URL = "https://github.com/Qiming-Liu/DeckyDSH#deckydsh";
 const LOG_LINES = 200;
 const LOG_POLL_MS = 3000;
 
@@ -67,7 +66,7 @@ function LogPanel() {
   };
 
   return <section aria-label={t("about.log")} style={{
-    height: "calc(100vh - 170px)", boxSizing: "border-box", padding: "12px 14px", borderRadius: 4, background: "rgba(0,0,0,.4)",
+    flex: "1 1 auto", minHeight: 0, boxSizing: "border-box", padding: "12px 14px", borderRadius: 4, background: "rgba(0,0,0,.4)",
     display: "flex", flexDirection: "column", gap: 8,
   }}>
     <Focusable flow-children="row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 11, color: colors.muted }}>
@@ -93,8 +92,10 @@ export const AboutTab: FC = () => {
   const [version, setVersion] = useState("");
   useEffect(() => { getVersion().then(setVersion).catch(() => {}); }, []);
   return <>
-    {/* One row of columns, so right from the author links reaches the log. */}
-    <Focusable flow-children="row" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 24, alignItems: "start" }}>
+    {/* One row of columns, so right from the author links reaches the log. The row fills the page, so the page never scrolls. */}
+    <Focusable flow-children="row" style={{
+      flex: "1 1 auto", minHeight: 0, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gridTemplateRows: "minmax(0, 1fr)", gap: 24,
+    }}>
       <Focusable flow-children="column" style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
         <Focusable flow-children="row" aria-label={AUTHOR} style={{ padding: "8px 12px", borderRadius: 4, background: colors.well, display: "flex", alignItems: "center", gap: 12 }}>
           <img src={AUTHOR_AVATAR} alt="" width={44} height={44} style={{ flex: "0 0 44px", borderRadius: 22, objectFit: "cover", background: colors.button }} />
@@ -119,12 +120,11 @@ export const AboutTab: FC = () => {
         <SectionTitle>{t("about.recommended")}</SectionTitle>
         <LinkRow title="DeckyGCM" description={t("about.gcmHint")} note={t("about.plugin")} url={DECKYGCM_URL} icon={logo(DECKYGCM_LOGO)} />
         <LinkRow title="CreamDeck" description={t("about.creamDeckHint")} note={t("about.plugin")} url={CREAMDECK_URL} icon={logo(CREAMDECK_LOGO)} />
-        <LinkRow title="DeckyDSH" description={t("about.deckyDshHint")} note={t("about.plugin")} url={DECKYDSH_URL} icon={logo(DECKYDSH_LOGO)} />
         <div style={{ borderTop: `1px solid ${colors.line}` }} />
       </Focusable>
 
       {/* The log gets the whole right half, down to the button hints. */}
-      <Focusable flow-children="column" style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <Focusable flow-children="column" style={{ display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
         <SectionTitle first>{t("about.log")}</SectionTitle>
         <LogPanel />
       </Focusable>

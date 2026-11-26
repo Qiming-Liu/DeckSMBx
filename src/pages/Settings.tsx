@@ -126,7 +126,7 @@ const Settings: FC = () => {
         <SideTab icon={<FaCog />} label={t("settings.title")} current={tab === "settings"} onClick={() => setTab("settings")} />
         <SideTab icon={<FaInfoCircle />} label={t("about.title")} current={tab === "about"} onClick={() => setTab("about")} />
       </Focusable>
-      <Focusable flow-children="column" style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column" }}>
+      <Focusable flow-children="column" style={{ flex: "1 1 auto", minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
         {tab === "settings" ? <SettingsTab /> : <AboutTab />}
       </Focusable>
     </div>
